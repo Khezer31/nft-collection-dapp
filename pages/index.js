@@ -1,6 +1,5 @@
 import Head from "next/head";
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { providers, Contract, utils } from "ethers";
 import { abi, NFT_CONTRACT_ADDRESS } from "../constants";
