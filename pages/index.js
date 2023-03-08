@@ -95,9 +95,10 @@ export default function Home() {
       const _presaleStarted = await nftContract.presaleStarted();
 
       setPresaleStarted(_presaleStarted);
-      if (!_presaleStarted) {
-        await getOwner();
-      }
+      await getOwner();
+      // if (!_presaleStarted) {
+      //   await getOwner();
+      // }
       return _presaleStarted;
     } catch (error) {
       console.log(error);
@@ -137,6 +138,7 @@ export default function Home() {
       if (address.toLowerCase() === _owner.toLowerCase()) {
         setIsOwner(true);
       }
+      console.log(_owner);
     } catch (error) {
       console.log(error.message);
     }
@@ -157,6 +159,25 @@ export default function Home() {
       const _tokenIds = await nftContract.tokenIds();
       //_tokenIds is a `Big Number`. We need to convert the Big Number to a string
       setTokenIdsMinted(_tokenIds.toString());
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  /**
+   * withdrawCoins: withdraws ether and tokens by calling
+   * the withdraw function in the contract
+   */
+  const withdrawCoins = async () => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, signer);
+
+      const tx = await nftContract.withdraw();
+      setLoading(true);
+      await tx.wait();
+      setLoading(false);
+      await getOwner();
     } catch (err) {
       console.error(err);
     }
@@ -297,6 +318,13 @@ export default function Home() {
             {tokenIdsMinted}/20 have been minted
           </div>
           {renderButton()}
+          {walletConnected && isOwner ? (
+            <div>
+              <button className={styles.button1} onClick={withdrawCoins}>
+                Withdraw Coins
+              </button>
+            </div>
+          ) : null}
         </div>
         <div>
           <img className={styles.image} src="./cryptodevs/0.svg" />
